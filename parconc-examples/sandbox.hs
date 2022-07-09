@@ -1,7 +1,7 @@
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE StandaloneDeriving #-}
 
-module Sandbox where
+module Main where
 
 newtype Talk = Talk Int
   -- deriving Show via Int

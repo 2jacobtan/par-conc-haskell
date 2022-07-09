@@ -664,3 +664,7 @@ executable  geturlsstm
 --   euler35
 --   index
 --   sudoku-par{1,2,3,4,5}
+
+executable sandbox
+  import: deps
+  main-is: sandbox.hs
