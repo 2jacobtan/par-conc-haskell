@@ -58,10 +58,17 @@ main = withSocketsDo $ do
   server <- newServer
   sock <- listenOn (PortNumber (fromIntegral port))
   printf "Listening on port %d\n" port
+  void $ forkIO (forwardBroadcasts server)
   forever $ do
       (handle, host, port) <- accept sock
       printf "Accepted connection from %s: %s\n" host (show port)
       forkFinally (talk handle server) (\_ -> hClose handle)
+
+forwardBroadcasts :: Server -> IO ()
+forwardBroadcasts Server{..} = forever $ do
+  (clients, newBroadcast) <- atomically $
+    (,) <$> readTVar clients <*> readTChan broadcastChannel
+  mapM_ (\client -> atomically $ sendMessage client newBroadcast) clients
 
 port :: Int
 port = 44444
@@ -97,12 +104,14 @@ newClient name handle = do
 -- <<Server
 data Server = Server
   { clients :: TVar (Map ClientName Client)
+  , broadcastChannel :: TChan Message
   }
 
 newServer :: IO Server
 newServer = do
   c <- newTVarIO Map.empty
-  return Server { clients = c }
+  bc <- newTChanIO
+  return Server { clients = c, broadcastChannel = bc}
 -- >>
 
 -- <<Message
@@ -119,7 +128,8 @@ data Message = Notice String
 broadcast :: Server -> Message -> STM ()
 broadcast Server{..} msg = do
   clientmap <- readTVar clients
-  mapM_ (\client -> sendMessage client msg) (Map.elems clientmap)
+  -- mapM_ (\client -> sendMessage client msg) (Map.elems clientmap)
+  writeTChan broadcastChannel msg
 -- >>
 
 -- <<sendMessage
