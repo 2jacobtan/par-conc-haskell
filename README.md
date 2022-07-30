@@ -1,6 +1,7 @@
 # par-conc-haskell
 
-using ghcup, set ghc-8.10.7 to match base < 4.15 required by parconc-examples \
+using ghcup, set ghc-8.10.7  \
+(for compatibility with `base < 4.15` required by parconc-examples \
 https://www.haskell.org/ghcup/
 
 `cabal build` inside ./parconc-examples  \
