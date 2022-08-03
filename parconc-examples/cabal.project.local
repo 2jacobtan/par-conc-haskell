@@ -1,3 +1,4 @@
 ignore-project: False
 optimization: 2
-with-compiler: ghc-8.10.7
+-- with-compiler: ghc-8.10.7
+with-compiler: ghc-8.6.5  -- required by accelerate library
