@@ -121,13 +121,13 @@ common monad-par
     monad-par >= 0.3.4 && < 0.4
 
 common distributed
-  if flag(distributed)
+  -- if flag(distributed)
      build-depends:
                    distributed-process >= 0.5 && < 0.8
                  , distributed-process-simplelocalnet ==0.2.*
                  , distributed-static >= 0.2 && < 0.4
-  else
-     buildable: False
+  -- else
+  --    buildable: False
   if impl(ghc <= 7.6)
       -- prior to ghc-7.4 generics lived in ghc-prim
       build-depends: ghc-prim
@@ -613,8 +613,8 @@ executable distrib-chat-noslave
 executable distrib-db
   import: deps, network, distributed
   main-is: db.hs
-  hs-source-dirs: . distrib-db
-  other-modules: DistribUtils Database
+  hs-source-dirs: . distrib-db https://github.com/haskell-distributed/distributed-process/
+  other-modules: DistribUtils Database Control.Distributed.Process
 
 -- -----------------------------------------------------------------------------
 -- conc-debugging-tuning
