@@ -36,6 +36,7 @@ distribMain master frtable = do
     [ "slave", host, port ] -> do
       backend <- initializeBackend host port rtable
       startSlave backend
+    unexpected -> error $ "unexpected: " ++ show unexpected
 
 defaultHost = "localhost"
 defaultPort = "44444"
