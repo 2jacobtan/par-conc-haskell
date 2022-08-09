@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell #-}
+-- {-# LANGUAGE TemplateHaskell #-}
 module DistribUtils ( distribMain ) where
 
 import Control.Distributed.Process

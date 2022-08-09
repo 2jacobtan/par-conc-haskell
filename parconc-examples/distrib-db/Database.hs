@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Database (
        Database,
@@ -19,47 +19,52 @@ import Data.Map.Strict (Map)
 import Text.Printf (printf)
 import Control.Concurrent.STM (TVar, readTVarIO, modifyTVar', newTVarIO, atomically)
 import Data.Functor ((<&>))
-import Data.Data
+import Data.Data ( Typeable )
 import Data.Binary (Binary)
 import GHC.Generics (Generic)
-import Control.Monad (forever)
-
-type Key   = String
-type Value = String
+import Control.Monad (forever, forM, forM_, when)
+import qualified Data.Vector as Vector
+import Worker (worker, Key, Value, worker__static, DBMessage (SetMsg, GetMsg), __remoteTable)
+import Data.Vector (Vector)
+import Data.Char (ord)
 
 type Database = ProcessId
 
 type DataStore = Map String String
 
-type Sender = ProcessId
-
-data DBMessage = GetMsg Sender Key | SetMsg Sender Key Value
-  deriving (Typeable, Generic)
-
-instance Binary DBMessage
-
-dbServer :: Process ()
-dbServer = do
+dbServer :: [NodeId] -> Process ()
+dbServer nodes = do
   say "dbServer starts\n"
-  dbTVar <- liftIO $ newTVarIO Map.empty
-  let loop =
-        expect >>= \case
-          GetMsg sender key -> do
-            returnVal <- liftIO $ readTVarIO dbTVar <&> Map.lookup key
-            send sender returnVal
-          SetMsg sender key val ->
-            liftIO $ atomically $ modifyTVar' dbTVar (Map.insert key val)
-  forever loop
 
-remotable ['dbServer]
+  workers <- fmap Vector.fromList $ forM nodes $ \nid -> do
+    say $ printf "dbServer: spawning on %s" (show nid)
+    spawn nid $(mkStaticClosure 'worker)
+
+  when (null nodes) $ liftIO $ ioError (userError "no workers")
+
+  forever $ expect @DBMessage >>= \msg -> do
+    let pidDelegate = assignDB workers msg
+    case msg of
+      GetMsg _ _ -> liftIO (print $ "GetMsg received:" ++ show msg)
+      _ -> return ()
+    -- forM_ workers $ \pid -> do
+    --   -- liftIO $ print ("dbServer: sent to " ++ show nid ++ ": " ++ show msg)
+    --   send pid msg
+    send pidDelegate msg
+
+assignDB :: Vector Database -> DBMessage -> Database
+assignDB ps = \case
+  GetMsg _ k -> go k
+  SetMsg _ k _ -> go k
+  where go k = (Vector.!) ps (mod (ord $ head k) (Vector.length ps))
 
 createDB :: [NodeId] -> Process Database
-createDB _nodes = do
+createDB nodes = do
   -- let node = head nodes
   -- say $ printf "createDB: spawning on %s" (show node)
   -- spawn node $(mkStaticClosure 'dbServer)
 
-  spawnLocal dbServer
+  spawnLocal $ dbServer nodes
 
 
 set :: Database -> Key -> Value -> Process ()
@@ -74,6 +79,6 @@ get db k = do
   expect  @(Maybe Value)
 
 rcdata :: RemoteTable -> RemoteTable
-rcdata = id
+rcdata = Worker.__remoteTable
   -- For the exercise, change this to include your
   -- remote metadata, e.g. rcdata = Database.__remoteTable

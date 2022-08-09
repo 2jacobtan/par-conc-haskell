@@ -615,7 +615,7 @@ executable distrib-db
   import: deps, network, distributed
   main-is: db.hs
   hs-source-dirs: . distrib-db
-  other-modules: DistribUtils Database
+  other-modules: DistribUtils Database Worker DatabaseSample WorkerSample
 
 -- -----------------------------------------------------------------------------
 -- conc-debugging-tuning
