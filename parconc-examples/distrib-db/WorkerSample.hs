@@ -17,13 +17,15 @@ import Data.Typeable
 import qualified Data.Map as Map
 import Data.Map (Map)
 
-class Send c a where
-   (!) :: Serializable a => c -> a -> Process ()
+class (Binary a, Typeable a) => Send c a where
+   (!) :: c -> a -> Process ()
 
-instance Send ProcessId a where
+data MyType = MyData
+
+instance (Binary a, Typeable a) => Send ProcessId a where
    (!) = send
 
-instance Send (SendPort a) a where
+instance (Binary a, Typeable a) => Send (SendPort a) a where
    (!) = sendChan
 
 type Key   = String -- should really use ByteString
@@ -45,7 +47,7 @@ worker = go Map.empty
       Set k v ->
         go (Map.insert k v store)
       Get k port -> do
-        port ! (Map.lookup k store)
+        port ! Map.lookup k store
         go store
 
 remotable ['worker]
