@@ -11,3 +11,6 @@ source-repository-package
   -- Replace this with the commit you want to check out:
   tag: cacb9d9ad84a5bdc6c6e6d4e8c7ff1835c89dce9
   
+constraints: any.network-transport == 0.5.4
+  -- 0.5.5 newly released on 2022-08-09 causes ghc-8.6.5 compilation to fail with
+  -- lexical error on "#if ..."

@@ -27,7 +27,7 @@ instance Binary DBMessage
 
 worker :: Process ()
 worker = do
-  say "workr starts\n"
+  say "worker starts\n"
   dbTVar <- liftIO $ newTVarIO Map.empty
   let loop =
         expect @DBMessage >>= \case
