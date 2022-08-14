@@ -9,6 +9,7 @@ import DistribUtils
 
 import Database (Database, createDB, get, rcdata, set)
 
+main :: IO ()
 main = distribMain master rcdata
 
 master :: [NodeId] -> Process ()

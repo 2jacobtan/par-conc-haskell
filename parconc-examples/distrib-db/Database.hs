@@ -61,7 +61,7 @@ assignDB ps = \case
 createDB :: [NodeId] -> Process Database
 createDB nodes = do
   -- let node = head nodes
-  -- say $ printf "createDB: spawning on %s" (show node)
+  say $ printf "createDB: nodes: %s" (show nodes)
   -- spawn node $(mkStaticClosure 'dbServer)
 
   spawnLocal $ dbServer nodes
