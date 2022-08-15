@@ -617,6 +617,11 @@ executable distrib-db
   hs-source-dirs: . distrib-db
   other-modules: DistribUtils Database Worker DatabaseSample WorkerSample
 
+executable example
+  import: deps, network, distributed
+  main-is: example.hs
+  hs-source-dirs: .
+
 -- -----------------------------------------------------------------------------
 -- conc-debugging-tuning
 
