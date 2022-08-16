@@ -1,0 +1,11 @@
+{
+  "references":
+  [ "https://github.com/ennocramer/floskell/blob/master/CONFIGURATION.md"
+  , "https://github.com/ennocramer/floskell"
+  ],
+  "formatting": {
+    "options": {
+      "preserve-vertical-space": true
+    }
+  }
+}

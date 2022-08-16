@@ -621,6 +621,9 @@ executable example
   import: deps, network, distributed
   main-is: example.hs
   hs-source-dirs: .
+  build-depends:
+    exceptions >=0.10 && < 0.11,
+    network-transport >= 0.5 && < 0.6
 
 -- -----------------------------------------------------------------------------
 -- conc-debugging-tuning
