@@ -4,8 +4,8 @@
 import System.Environment ( getArgs )
 import Control.Distributed.Process hiding ( bracket )
 import Control.Distributed.Process.Node ( initRemoteTable )
--- import Control.Distributed.Process.Backend.SimpleLocalnet hiding (startSlave)
-import Control.Distributed.Process.Backend.SimpleLocalnet
+import Control.Distributed.Process.Backend.SimpleLocalnet hiding (startSlave)
+-- import Control.Distributed.Process.Backend.SimpleLocalnet
 import Control.Monad ( forM_, replicateM, forever )
 import Control.Monad.Catch ( bracket )
 import Data.Maybe ( catMaybes )
@@ -88,35 +88,35 @@ findSlavesProc backend = do
 --
 -- This function does not return. The only way to exit the slave is to CTRL-C
 -- the process or call terminateSlave from another node.
--- startSlave :: Backend -> IO ()
--- startSlave backend = do
---   node <- newLocalNode backend
---   Node.runProcess node slaveController
+startSlave :: Backend -> IO ()
+startSlave backend = do
+  node <- newLocalNode backend
+  Node.runProcess node slaveController
 
 -- | The slave controller interprets 'SlaveControllerMsg's
--- slaveController :: Process ()
--- slaveController = do
---     pid@(ProcessId nodeID localProcessId) <- getSelfPid
---     register "slaveController" pid
---     say $ "pid: " ++ show pid
---     say $ "ProcessID: " ++ show nodeID ++ " | " ++ show localProcessId
---     forever $ (say . show =<< getProcessInfo pid) >> liftIO (threadDelay 3000000)
---     -- go
---   where
---     go = do
---       msg :: Int <- expect
---       -- case msg of
---       --   SlaveTerminate -> return ()
---       --   RedirectLogsTo loggerPid from -> do
---       --     r <- try (reregister "logger" loggerPid)
---       --     ok <- case (r :: Either ProcessRegistrationException ()) of
---       --             Right _ -> return True
---       --             Left _  -> do
---       --               s <- try (register "logger" loggerPid)
---       --               case (s :: Either ProcessRegistrationException ()) of
---       --                 Right _ -> return True
---       --                 Left _  -> return False
---       --     pid <- getSelfPid
---       --     send from (RedirectLogsReply pid ok)
---       --     go
---       go
+slaveController :: Process ()
+slaveController = do
+    pid@(ProcessId nodeID localProcessId) <- getSelfPid
+    register "slaveController" pid
+    say $ "pid: " ++ show pid
+    say $ "ProcessID: " ++ show nodeID ++ " | " ++ show localProcessId
+    forever $ (say . show =<< getProcessInfo pid) >> liftIO (threadDelay 3000000)
+    -- go
+  where
+    go = do
+      msg :: Int <- expect
+      -- case msg of
+      --   SlaveTerminate -> return ()
+      --   RedirectLogsTo loggerPid from -> do
+      --     r <- try (reregister "logger" loggerPid)
+      --     ok <- case (r :: Either ProcessRegistrationException ()) of
+      --             Right _ -> return True
+      --             Left _  -> do
+      --               s <- try (register "logger" loggerPid)
+      --               case (s :: Either ProcessRegistrationException ()) of
+      --                 Right _ -> return True
+      --                 Left _  -> return False
+      --     pid <- getSelfPid
+      --     send from (RedirectLogsReply pid ok)
+      --     go
+      go
