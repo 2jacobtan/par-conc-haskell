@@ -1,13 +1,14 @@
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE StandaloneDeriving #-}
 
-module Main where
+module Main (MyNum) where
 
-newtype Talk = Talk Int
+newtype MyNum = MyNum Int
   -- deriving Show via Int
 
--- deriving instance Show Talk
-deriving via Int instance Show Talk
+-- deriving instance Show MyNum
+deriving via Int instance Show MyNum
 
 main = do
-  print $ Talk 5
+  print $ MyNum 5
+  
