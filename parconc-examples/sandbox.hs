@@ -39,8 +39,6 @@ newtype Fix f = Fix { unFix :: f (Fix f) }
 
 type List a = Fix (ListF a)
 
-type EmptyList = List ()
-
 emptyList :: List a
 emptyList = Fix NilF
 
@@ -55,7 +53,7 @@ gfold :: (ListF a b -> b) -> Fix (ListF a) -> b
 gfold f (Fix NilF) = f NilF
 gfold f (Fix (ConsF x xs)) = f (ConsF x (gfold f xs))
 
-cata :: (Functor f) => (f a -> a) -> Fix f -> a
+cata :: (Functor f) => (f a -> b) -> Fix f -> b
 cata = undefined
 
 
