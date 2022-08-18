@@ -53,8 +53,10 @@ gfold :: (ListF a b -> b) -> Fix (ListF a) -> b
 gfold f (Fix NilF) = f NilF
 gfold f (Fix (ConsF x xs)) = f (ConsF x (gfold f xs))
 
-cata :: (Functor f) => (f a -> b) -> Fix f -> b
-cata = undefined
+cata :: (Functor f) => (f r -> r) -> Fix f -> r
+-- cata g (Fix fr) = g (fmap (cata g) fr)
+-- cata g fix_fr = g . fmap (cata g) . unFix $ fix_fr
+cata g = g . fmap (cata g) . unFix
 
 
 
