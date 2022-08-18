@@ -1,7 +1,7 @@
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE StandaloneDeriving #-}
 
-module Main (MyNum) where
+module Main where
 
 newtype MyNum = MyNum Int
   -- deriving Show via Int
@@ -9,6 +9,7 @@ newtype MyNum = MyNum Int
 -- deriving instance Show MyNum
 deriving via Int instance Show MyNum
 
+main :: IO ()
 main = do
   print $ MyNum 5
   
